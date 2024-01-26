@@ -1,4 +1,4 @@
-# Broken word generatod
+# Broken word generator
 
 ## Description
 This program is a tool for generating unique words using the bad implemention Markov chain.
