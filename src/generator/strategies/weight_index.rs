@@ -11,11 +11,29 @@ impl WeightIndexStrategy {
     }
 }
 
+impl WeightIndexStrategy {
+
+}
+
 impl Strategy for WeightIndexStrategy {
     fn execute(&self, model: &Model) -> String {
         let mut rng = thread_rng();
         let mut word = String::new();
-        let mut curr_token = Token::StartPosition;
+
+        let mut available_lengths = model.transitions
+            .keys()
+            .filter(|&token| match token {
+                Token::StartPosition(_len) => true,
+                _ => false
+            })
+            .map(|token| match token {
+                Token::StartPosition(length) => length,
+                _ => &0,
+            });
+        let length_distributions = WeightedIndex::new(available_lengths.clone()).unwrap();
+
+        let word_length = available_lengths.nth(length_distributions.sample(&mut rng)).unwrap();
+        let mut curr_token = Token::StartPosition(*word_length);
 
         loop {
             match model.transitions.get(&curr_token) {
@@ -27,7 +45,7 @@ impl Strategy for WeightIndexStrategy {
                     if let Some((token, _)) = weights.nth(distributions.sample(&mut rng)) {
                         match token {
                             Token::EndPosition => {
-                                if word.len() >= 3 {
+                                if word.len() >= *word_length {
                                     return word;
                                 } else {
                                     continue;

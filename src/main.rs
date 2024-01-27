@@ -3,16 +3,14 @@ mod model_def;
 
 use generator::prelude::*;
 use model_def::prelude::*;
+use std::fs;
 
 fn main() {
-    let data_preset = vec![
-        "Aaren", "Aarika", "Abagael", "Abagail", "Abbe", "Abbey", "Abbi", "Abbie", "Abby", "Abra",
-    ]
-    .into_iter();
+    let file_content = fs::read_to_string("./dataset/words.txt").unwrap();
     let mut model = Model::new();
     let strategy = WeightIndexStrategy::new();
 
-    model.apply_preset(data_preset);
+    model.apply_preset(file_content.split('\n'));
 
     println!("Generated word: {:?}", strategy.execute(&model));
 }

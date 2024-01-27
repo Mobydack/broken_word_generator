@@ -38,15 +38,15 @@ impl Model {
         let mut parent_token_option: Option<Token> = None;
 
         normalized_atomic_word.0.chars().for_each(|character| {
-            let token = Token::get_token(&character);
+            let token = Token::get_token(&normalized_atomic_word.0, &character);
 
             self.transitions
                 .entry(token)
                 .or_insert(Box::new(Transition::new()));
 
             if let Some(parent_token) = parent_token_option {
-                self.transitions.entry(parent_token).and_modify(|children| {
-                    children
+                self.transitions.entry(parent_token).and_modify(|transition| {
+                    transition
                         .0
                         .entry(token)
                         .and_modify(|token_count| *token_count += 1)
